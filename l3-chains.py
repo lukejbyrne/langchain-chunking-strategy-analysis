@@ -51,7 +51,7 @@ overall_simple_chain = SimpleSequentialChain(chains=[chain_one, chain_two],
                                              verbose=True
                                             )
 
-#SequentialChain - chains move L->R but not necessary in n->n+1 order
+#SequentialChain - chains move L->R but vars not necessary in n->n+1 order, can be n->n+1 and n & n+1->n+2 etc.
 llm = ChatOpenAI(temperature=0.9, model=llm_model)
 
 # prompt template 1: translate to english

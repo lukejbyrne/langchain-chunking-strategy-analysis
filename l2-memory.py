@@ -77,7 +77,7 @@ At Noon, lunch at the italian resturant with a customer who is driving \
 from over an hour away to meet you to understand the latest in AI. \
 Be sure to bring your laptop to show the latest LLM demo."
 
-memory = ConversationSummaryBufferMemory(llm=llm, max_token_limit=100)
+memory = ConversationSummaryBufferMemory(llm=llm, max_token_limit=100) # since tokens also includes system msg for openai as well as ai and user
 memory.save_context({"input": "Hello"}, {"output": "What's up"})
 memory.save_context({"input": "Not much, just hanging"},
                     {"output": "Cool"})

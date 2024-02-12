@@ -21,7 +21,6 @@ llm_model = llm_model()
 # Note: LLM's do not always produce the same results. When executing the code in your notebook, you may get slightly different answers that those in the video.
 
 # Built-in LangChain tools
-
 llm = ChatOpenAI(temperature=0, model=llm_model)
 
 tools = load_tools(["llm-math","wikipedia"], llm=llm)
@@ -62,7 +61,6 @@ last name and then first name \
 and print the output: {customer_list}""") 
 
 # View detailed outputs of the chains
-
 import langchain
 langchain.debug=True
 agent.run(f"""Sort these customers by \
@@ -71,7 +69,6 @@ and print the output: {customer_list}""")
 langchain.debug=False
 
 # Custom tool: tell me the date
-
 # how agent will know when and how to call this tool via thought string below
 @tool
 def time(text: str) -> str:
@@ -89,6 +86,7 @@ agent= initialize_agent(
     agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
     handle_parsing_errors=True,
     verbose = True)
+
 # Note:
 # The agent will sometimes come to the wrong conclusion (agents are a work in progress!).
 # If it does, please try running it again.

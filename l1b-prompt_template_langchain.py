@@ -51,3 +51,25 @@ customer_messages = prompt_template.format_messages(
 customer_response = chat(customer_messages)
 
 print(customer_response.content)
+
+service_reply = """Hey there customer, \
+the warranty does not cover \
+cleaning expenses for your kitchen \
+because it's your fault that \
+you misused your blender \
+by forgetting to put the lid on before \
+starting the blender. \
+Tough luck! See ya!
+"""
+
+service_style_pirate = """\
+a polite tone \
+that speaks in English Pirate\
+"""
+
+service_messages = prompt_template.format_messages(
+    style=service_style_pirate,
+    text=service_reply)
+
+service_response = chat(service_messages)
+print(service_response.content)

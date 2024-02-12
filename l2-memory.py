@@ -5,6 +5,7 @@ from set_model import llm_model
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferWindowMemory
 
 _ = load_dotenv(find_dotenv()) # read local .env file
 warnings.filterwarnings('ignore')
@@ -34,3 +35,21 @@ memory.save_context({"input": "Not much, just hanging"},
 print(memory.buffer)
 
 memory.load_memory_variables({})
+
+# ConversationBufferWindowMemory
+memory = ConversationBufferWindowMemory(k=1) # where k = # of msgs to remmeber each (1 ai and 1 user) 
+
+memory.save_context({"input": "Hi"},
+                    {"output": "What's up"})
+memory.save_context({"input": "Not much, just hanging"},
+                    {"output": "Cool"})
+
+memory.load_memory_variables({})
+
+llm = ChatOpenAI(temperature=0.0, model=llm_model)
+memory = ConversationBufferWindowMemory(k=1)
+conversation = ConversationChain(
+    llm=llm, 
+    memory = memory,
+    verbose=False
+)

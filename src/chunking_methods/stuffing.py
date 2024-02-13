@@ -25,13 +25,7 @@ db = Chroma.from_documents(
     embedding
 )
 
-# Run query against the db
-query = "Please suggest a shirt with sunblocking"
-docs = db.similarity_search(query)
-print(len(docs))
-print(docs[0])
-
-# langchain version - saves pulling the docs together into a single var as uses vector db
+# layers vector db on llm to inform decisions and responses
 llm = ChatOpenAI(temperature = 0.0, model=llm_model)
 retriever = db.as_retriever()
 qa_stuff = RetrievalQA.from_chain_type(
@@ -43,11 +37,4 @@ qa_stuff = RetrievalQA.from_chain_type(
 query =  "Please list all your shirts with sun protection in a table \
 in markdown and summarize each one."
 response = qa_stuff.run(query)
-print("here")
 print(response)
-
-# customise the index and vector store - why?
-index = VectorstoreIndexCreator(
-    vectorstore_cls=Chroma,
-    embedding=embedding,
-).from_loaders([loader])

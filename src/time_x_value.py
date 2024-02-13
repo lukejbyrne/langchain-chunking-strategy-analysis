@@ -23,15 +23,14 @@ def check_and_load_vector_db(file_path, embedding):
     # Check if the vector DB file exists
     if os.path.exists(db_file_path):
         print(f"Loading existing vector DB from {db_file_path}")
-        db = Chroma.load(db_file_path)
+        db = Chroma(persist_directory=db_file_path, embedding_function=embedding)
     else:
         print(f"Vector DB not found. Creating from {file_path}")
         # Load the CSV and create the vector DB
         loader = CSVLoader(file_path=file_path)
         documents = loader.load()
-        db = Chroma.from_documents(documents, embedding)
         # Save the newly created vector DB
-        db.save(db_file_path)
+        db = Chroma.from_documents(documents, embedding, persist_directory=db_file_path)
         print(f"Saved new vector DB to {db_file_path}")
     
     return db
@@ -87,7 +86,7 @@ retriever = db.as_retriever()
 
 # Run analysis
 for i in queries:
-    qa_analysis(queries[i], llm, "stuff", retriever, True)
-    qa_analysis(queries[i], llm, "map_reduce", retriever, True)
-    qa_analysis(queries[i], llm, "refine", retriever, True)
-    qa_analysis(queries[i], llm, "map_rerank", retriever, True)
+    qa_analysis(llm, "stuff", retriever, True, i)
+    qa_analysis(llm, "map_reduce", retriever, True, i)
+    qa_analysis(llm, "refine", retriever, True, i)
+    qa_analysis(llm, "map_rerank", retriever, True, i)

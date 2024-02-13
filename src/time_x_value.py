@@ -71,37 +71,41 @@ def qa_analysis(llm, chain_type, retriever, verbose, query):
 
     # return object with time and response?
 
-# Basic Setup
-_ = load_dotenv(find_dotenv()) # read local .env file
-llm_model = llm_model()
+def main():
+    # Basic Setup
+    _ = load_dotenv(find_dotenv()) # read local .env file
+    llm_model = llm_model()
 
-# Load data into vector db or use existing one
-file_path = '../data/OutdoorClothingCatalog_1000.csv'
-embedding = OpenAIEmbeddings()  # Define embedding
+    # Load data into vector db or use existing one
+    file_path = '../data/OutdoorClothingCatalog_1000.csv'
+    embedding = OpenAIEmbeddings()  # Define embedding
 
-# Check if vector DB exists for the CSV, and load or create accordingly
-db = check_and_load_vector_db(file_path, embedding)
+    # Check if vector DB exists for the CSV, and load or create accordingly
+    db = check_and_load_vector_db(file_path, embedding)
 
-queries = ["Please suggest a shirt with sunblocking", "Please suggest a shirt with sunblocking and tell me why this one", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table, with a summary below outlining why sunblocking is important"]
-#TODO: iterate and use dictionary?
-#TODO: define criteria for measurement
+    queries = ["Please suggest a shirt with sunblocking", "Please suggest a shirt with sunblocking and tell me why this one", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table, with a summary below outlining why sunblocking is important"]
+    #TODO: iterate and use dictionary?
+    #TODO: define criteria for measurement
 
-# Configure LLM for querying
-# layers vector db on llm to inform decisions and responses
-llm = ChatOpenAI(temperature = 0.0, model=llm_model)
-retriever = db.as_retriever()
+    # Configure LLM for querying
+    # layers vector db on llm to inform decisions and responses
+    llm = ChatOpenAI(temperature = 0.0, model=llm_model)
+    retriever = db.as_retriever()
 
-# Run analysis
-# for i in queries:
-#     qa_analysis(llm, "stuff", retriever, True, i)
-#     qa_analysis(llm, "map_reduce", retriever, True, i)
-#     qa_analysis(llm, "refine", retriever, True, i)
-#     qa_analysis(llm, "map_rerank", retriever, True, i)
+    # Run analysis
+    # for i in queries:
+    #     qa_analysis(llm, "stuff", retriever, True, i)
+    #     qa_analysis(llm, "map_reduce", retriever, True, i)
+    #     qa_analysis(llm, "refine", retriever, True, i)
+    #     qa_analysis(llm, "map_rerank", retriever, True, i)
 
-#TODO: llm to create and evaluate
-# EVALUATION
+    #TODO: llm to create and evaluate
+    # EVALUATION
 
-tuple = generate_qas(file_path, db, llm)
-qa = tuple[0]
-examples = tuple[1]
-evaluate(qa, examples, llm)
+    tuple = generate_qas(file_path, db, llm)
+    qa = tuple[0]
+    examples = tuple[1]
+    evaluate(qa, examples, llm)
+
+if __name__ == '__main__':
+    main()

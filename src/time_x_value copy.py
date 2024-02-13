@@ -9,20 +9,15 @@ from datetime import datetime
 from modules.set_model import llm_model
 from langchain.callbacks import get_openai_callback
 
-def vct_db_filename_gen(file_path):
-    # Derive vector DB filename from CSV filename
-    base_name = os.path.basename(file_path)
-    db_file_name = os.path.splitext(base_name)[0] + ".vecdb"
-
-    return os.path.join(os.path.dirname(file_path), db_file_name)
-
 def check_and_load_vector_db(file_path, embedding):
     """
     Checks if a vector db file exists for the given file_path, 
     loads it if exists, otherwise creates it from the csv and saves it.
     """
     # Derive vector DB filename from CSV filename
-    db_file_path = vct_db_filename_gen(file_path)
+    base_name = os.path.basename(file_path)
+    db_file_name = os.path.splitext(base_name)[0] + ".vecdb"
+    db_file_path = os.path.join(os.path.dirname(file_path), db_file_name)
 
     # Check if the vector DB file exists
     if os.path.exists(db_file_path):
@@ -84,6 +79,7 @@ db = check_and_load_vector_db(file_path, embedding)
 queries = ["Please suggest a shirt with sunblocking", "Please suggest a shirt with sunblocking and tell me why this one", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table, with a summary below outlining why sunblocking is important"]
 #TODO: iterate and use dictionary?
 #TODO: define criteria for measurement
+#TODO: llm to create and evaluate
 
 # Configure LLM for querying
 # layers vector db on llm to inform decisions and responses
@@ -91,91 +87,8 @@ llm = ChatOpenAI(temperature = 0.0, model=llm_model)
 retriever = db.as_retriever()
 
 # Run analysis
-# for i in queries:
-#     qa_analysis(llm, "stuff", retriever, True, i)
-#     qa_analysis(llm, "map_reduce", retriever, True, i)
-#     qa_analysis(llm, "refine", retriever, True, i)
-#     qa_analysis(llm, "map_rerank", retriever, True, i)
-
-#TODO: llm to create and evaluate
-# EVALUATION
-
-from dotenv import load_dotenv, find_dotenv
-import langchain
-from langchain.evaluation.qa import QAGenerateChain
-from langchain.evaluation.qa import QAEvalChain
-
-loader = CSVLoader(file_path=file_path)
-data = loader.load()
-
-from langchain.indexes.vectorstore import VectorStoreIndexWrapper
-
-index = VectorStoreIndexWrapper(vectorstore=db)
-
-qa = RetrievalQA.from_chain_type(
-    llm=llm, 
-    chain_type="stuff", 
-    retriever=index.vectorstore.as_retriever(), 
-    verbose=True,
-    chain_type_kwargs = {
-        "document_separator": "<<<<>>>>>"
-    }
-) 
-
-# Coming up with test datapoints
-
-print(data[10])
-print(data[11])
-print("\nwooooooooozaAAAAAAAAaaaaaaa\n")
-
-# Hard-coded query examples
-
-examples = [
-    {
-        "query": "Do the Cozy Comfort Pullover Set\
-        have side pockets?",
-        "answer": "Yes"
-    },
-    {
-        "query": "What collection is the Ultra-Lofty \
-        850 Stretch Down Hooded Jacket from?",
-        "answer": "The DownTek collection"
-    }
-]
-
-# LLM-Generated example Q&A pairs 
-
-example_gen_chain = QAGenerateChain.from_llm(ChatOpenAI(model=llm_model))
-# the warning below can be safely ignored
-new_examples = example_gen_chain.apply_and_parse(
-    [{"doc": t} for t in data[:5]]
-)
-print(new_examples[0])
-print(data[0])
-
-# Combine examples
-examples += new_examples
-qa.run(examples[0]["query"])
-
-# Manual Evaluation
-langchain.debug = True
-qa.run(examples[0]["query"]) # example output at example_output.txt
-# Turn off the debug mode
-langchain.debug = False
-
-# LLM assisted evaluation
-# How are we going to evaulate those created by LLM?
-predictions = qa.apply(examples)
-eval_chain = QAEvalChain.from_llm(llm)
-graded_outputs = eval_chain.evaluate(examples, predictions)
-
-# using llm as real answer and predicted answer are not similar in a string match sense, e.g. look at example_llm_eval.txt
-for i, eg in enumerate(examples):
-    print(f"Example {i}:")
-    print("Question: " + predictions[i]['query'])
-    print("Real Answer: " + predictions[i]['answer'])
-    print("Predicted Answer: " + predictions[i]['result'])
-    print("Predicted Grade: " + graded_outputs[i]['text'])
-    print()
-
-print(graded_outputs[0])
+for i in queries:
+    qa_analysis(llm, "stuff", retriever, True, i)
+    qa_analysis(llm, "map_reduce", retriever, True, i)
+    qa_analysis(llm, "refine", retriever, True, i)
+    qa_analysis(llm, "map_rerank", retriever, True, i)

@@ -33,12 +33,12 @@ qa = RetrievalQA.from_chain_type(
     chain_type_kwargs = {
         "document_separator": "<<<<>>>>>"
     }
-)
+) 
 
 # Coming up with test datapoints
 
-data[10]
-data[11]
+print(data[10])
+print(data[11])
 
 # Hard-coded query examples
 
@@ -62,8 +62,8 @@ example_gen_chain = QAGenerateChain.from_llm(ChatOpenAI(model=llm_model))
 new_examples = example_gen_chain.apply_and_parse(
     [{"doc": t} for t in data[:5]]
 )
-new_examples[0]
-data[0]
+print(new_examples[0])
+print(data[0])
 
 # Combine examples
 examples += new_examples
@@ -91,4 +91,4 @@ for i, eg in enumerate(examples):
     print("Predicted Grade: " + graded_outputs[i]['text'])
     print()
 
-graded_outputs[0]
+print(graded_outputs[0])

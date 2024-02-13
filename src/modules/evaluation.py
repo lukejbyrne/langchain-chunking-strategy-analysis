@@ -1,94 +1,65 @@
-import os
-from set_model import llm_model
-from dotenv import load_dotenv, find_dotenv
 import langchain
 from langchain.evaluation.qa import QAGenerateChain
 from langchain.evaluation.qa import QAEvalChain
-
-_ = load_dotenv(find_dotenv()) # read local .env file
-llm_model = llm_model()
-
-# Create our QandA application
-
+from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import CSVLoader
-from langchain.indexes import VectorstoreIndexCreator
-from langchain.vectorstores import DocArrayInMemorySearch
+from langchain_community.document_loaders import CSVLoader
+from modules.set_model import llm_model
+from langchain_openai import ChatOpenAI
 
-file = 'OutdoorClothingCatalog_1000.csv'
-loader = CSVLoader(file_path=file)
-data = loader.load()
+def generate_qas(file_path, db, llm):
+    # Load vector db to index
+    loader = CSVLoader(file_path=file_path)
+    data = loader.load()
+    index = VectorStoreIndexWrapper(vectorstore=db)
 
-index = VectorstoreIndexCreator(
-    vectorstore_cls=DocArrayInMemorySearch
-).from_loaders([loader])
+    qa = RetrievalQA.from_chain_type(
+        llm=llm, 
+        chain_type="stuff", 
+        retriever=index.vectorstore.as_retriever(), 
+        verbose=True,
+        chain_type_kwargs = {
+            "document_separator": "<<<<>>>>>"
+        }
+    ) 
 
-llm = ChatOpenAI(temperature = 0.0, model=llm_model)
-qa = RetrievalQA.from_chain_type(
-    llm=llm, 
-    chain_type="stuff", 
-    retriever=index.vectorstore.as_retriever(), 
-    verbose=True,
-    chain_type_kwargs = {
-        "document_separator": "<<<<>>>>>"
-    }
-) 
+    #TODO: LLM generated Q&As?
+    # LLM-Generated example Q&A pairs 
+    example_gen_chain = QAGenerateChain.from_llm(ChatOpenAI(model=llm_model()))
+    # the warning below can be safely ignored
+    examples = example_gen_chain.apply_and_parse(
+        [{"doc": t} for t in data[:5]]
+    )
+    print(examples[0])
+    print(data[0])
 
-# Coming up with test datapoints
+    # run example
+    qa.run(examples[0]["query"]) #TODO: PRIORITY; key error?
 
-print(data[10])
-print(data[11])
+    return qa, examples
 
-# Hard-coded query examples
+def evaluate(qa, examples, llm):
+    # LLM assisted evaluation
+    # How are we going to evaulate those created by LLM?
+    predictions = qa.apply(examples)
+    eval_chain = QAEvalChain.from_llm(llm)
+    graded_outputs = eval_chain.evaluate(examples, predictions)
 
-examples = [
-    {
-        "query": "Do the Cozy Comfort Pullover Set\
-        have side pockets?",
-        "answer": "Yes"
-    },
-    {
-        "query": "What collection is the Ultra-Lofty \
-        850 Stretch Down Hooded Jacket from?",
-        "answer": "The DownTek collection"
-    }
-]
+    # turn to object and return
+    # using llm as real answer and predicted answer are not similar in a string match sense, e.g. look at example_llm_eval.txt
+    for i, eg in enumerate(examples):
+        print(f"Example {i}:")
+        print("Question: " + predictions[i]['query'])
+        print("Real Answer: " + predictions[i]['answer'])
+        print("Predicted Answer: " + predictions[i]['result'])
+        print("Predicted Grade: " + graded_outputs[i]['text'])
+        print()
 
-# LLM-Generated example Q&A pairs 
+    print(graded_outputs[0])
 
-example_gen_chain = QAGenerateChain.from_llm(ChatOpenAI(model=llm_model))
-# the warning below can be safely ignored
-new_examples = example_gen_chain.apply_and_parse(
-    [{"doc": t} for t in data[:5]]
-)
-print(new_examples[0])
-print(data[0])
-
-# Combine examples
-examples += new_examples
-qa.run(examples[0]["query"])
-
-# Manual Evaluation
-langchain.debug = True
-qa.run(examples[0]["query"]) # example output at example_output.txt
-# Turn off the debug mode
-langchain.debug = False
-
-# LLM assisted evaluation
-# How are we going to evaulate those created by LLM?
-predictions = qa.apply(examples)
-llm = ChatOpenAI(temperature=0, model=llm_model)
-eval_chain = QAEvalChain.from_llm(llm)
-graded_outputs = eval_chain.evaluate(examples, predictions)
-
-# using llm as real answer and predicted answer are not similar in a string match sense, e.g. look at example_llm_eval.txt
-for i, eg in enumerate(examples):
-    print(f"Example {i}:")
-    print("Question: " + predictions[i]['query'])
-    print("Real Answer: " + predictions[i]['answer'])
-    print("Predicted Answer: " + predictions[i]['result'])
-    print("Predicted Grade: " + graded_outputs[i]['text'])
-    print()
-
-print(graded_outputs[0])
+    # store in file for manual evaluation
+    # Manual Evaluation
+    langchain.debug = True
+    qa.run(examples[0]["query"]) # example output at example_output.txt
+    # Turn off the debug mode
+    langchain.debug = False

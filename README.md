@@ -78,7 +78,7 @@ Map_Rerank excels in environments where the initial retrieval might produce a la
 4. Run queries against LLM recording
     - time
     - tokens used
-    - accuracy of output (correctness)
+    - accuracy of output (correctness) #TODO: evaluate
 
  [Projected]
 1. Create a basic chain in LangChain

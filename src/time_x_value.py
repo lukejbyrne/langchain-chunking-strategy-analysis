@@ -8,8 +8,40 @@ from langchain_openai.embeddings import OpenAIEmbeddings
 import sys
 import os
 from datetime import datetime
+from modules.set_model import llm_model
 
-def qa_analysis(llm, chain_type, retriever, verbose):
+def check_and_load_vector_db(file_path, embedding):
+    """
+    Checks if a vector db file exists for the given file_path, 
+    loads it if exists, otherwise creates it from the csv and saves it.
+    """
+    # Derive vector DB filename from CSV filename
+    base_name = os.path.basename(file_path)
+    db_file_name = os.path.splitext(base_name)[0] + ".vecdb"
+    db_file_path = os.path.join(os.path.dirname(file_path), db_file_name)
+
+    # Check if the vector DB file exists
+    if os.path.exists(db_file_path):
+        print(f"Loading existing vector DB from {db_file_path}")
+        db = Chroma.load(db_file_path)
+    else:
+        print(f"Vector DB not found. Creating from {file_path}")
+        # Load the CSV and create the vector DB
+        loader = CSVLoader(file_path=file_path)
+        documents = loader.load()
+        db = Chroma.from_documents(documents, embedding)
+        # Save the newly created vector DB
+        db.save(db_file_path)
+        print(f"Saved new vector DB to {db_file_path}")
+    
+    return db
+
+def qa_analysis(llm, chain_type, retriever, verbose, query):
+    """
+    Initializes a QA analysis with a given language model, chain type, and retriever.
+    Then, it runs the QA analysis, timing its execution and printing the response along with the execution time.
+    """
+    # Initialize the RetrievalQA object with the specified parameters.
     qa = RetrievalQA.from_chain_type(
         llm=llm, 
         chain_type=chain_type, 
@@ -17,52 +49,45 @@ def qa_analysis(llm, chain_type, retriever, verbose):
         verbose=verbose
     )
 
-    # record current timestamp
     start = datetime.now()
 
+    # Execute the QA analysis
     response = qa.run(query)
 
-    # record loop end timestamp
     end = datetime.now()
 
-    # find difference loop start and end time and display
+    # Calculate the difference between the end and start timestamps to get the execution duration.
+    # The duration is converted to milliseconds for a more precise and readable format.
     td = (end - start).total_seconds() * 10**3
+    
     print(f"Response: {response}\nThe time of execution of above program is : {td:.03f}ms")
 
     # return object with time and response?
 
 # Basic Setup
 _ = load_dotenv(find_dotenv()) # read local .env file
-# add the parent directory of 'src' to sys.path for local module imports
-# sys.path.insert(0, os.path.abspath('../modules/'))
-from modules.set_model import llm_model
 llm_model = llm_model()
 
-# Load data into vector db
-file = '../data/OutdoorClothingCatalog_1000.csv'
-loader = CSVLoader(file_path=file)
-documents = loader.load()
-embedding = OpenAIEmbeddings() # defining embedding
-db = Chroma.from_documents(
-    documents, 
-    embedding
-)
+# Load data into vector db or use existing one
+file_path = '../data/OutdoorClothingCatalog_1000.csv'
+embedding = OpenAIEmbeddings()  # Define embedding
 
-# query =  "Please list all your shirts with sun protection in a table \
-# in markdown and summarize each one."
+# Check if vector DB exists for the CSV, and load or create accordingly
+db = check_and_load_vector_db(file_path, embedding)
 
-query = "Please suggest a shirt with sunblocking" # test to reduce token use
-
+queries = ["Please suggest a shirt with sunblocking", "Please suggest a shirt with sunblocking and tell me why this one", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table", "Please suggest three shirts with sunblocking and tell me why. Give this back to me in markdown code as a table, with a summary below outlining why sunblocking is important"]
 #TODO: iterate and use dictionary?
-#TODO: time how long query takes
 #TODO: define criteria for measurement
 #TODO: llm to create and evaluate
 
+# Configure LLM for querying
 # layers vector db on llm to inform decisions and responses
 llm = ChatOpenAI(temperature = 0.0, model=llm_model)
 retriever = db.as_retriever()
 
-qa_analysis(llm, "stuff", retriever, True)
-qa_analysis(llm, "map_reduce", retriever, True)
-qa_analysis(llm, "refine", retriever, True)
-qa_analysis(llm, "map_rerank", retriever, True)
+# Run analysis
+for i in queries:
+    qa_analysis(queries[i], llm, "stuff", retriever, True)
+    qa_analysis(queries[i], llm, "map_reduce", retriever, True)
+    qa_analysis(queries[i], llm, "refine", retriever, True)
+    qa_analysis(queries[i], llm, "map_rerank", retriever, True)

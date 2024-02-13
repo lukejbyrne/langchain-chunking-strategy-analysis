@@ -10,9 +10,6 @@ import os
 from datetime import datetime
 
 def qa_analysis(llm, chain_type, retriever, verbose):
-    # record current timestamp
-    start = datetime.now()
-
     qa = RetrievalQA.from_chain_type(
         llm=llm, 
         chain_type=chain_type, 
@@ -20,12 +17,17 @@ def qa_analysis(llm, chain_type, retriever, verbose):
         verbose=verbose
     )
 
+    # record current timestamp
+    start = datetime.now()
+
+    response = qa.run(query)
+
     # record loop end timestamp
     end = datetime.now()
 
     # find difference loop start and end time and display
     td = (end - start).total_seconds() * 10**3
-    print(f"Response: {qa}\nThe time of execution of above program is : {td:.03f}ms")
+    print(f"Response: {response}\nThe time of execution of above program is : {td:.03f}ms")
 
     # return object with time and response?
 

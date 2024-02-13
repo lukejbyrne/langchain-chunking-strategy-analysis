@@ -3,12 +3,11 @@ from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import CSVLoader
 from langchain_community.vectorstores import Chroma
-from langchain.indexes import VectorstoreIndexCreator
 from langchain_openai.embeddings import OpenAIEmbeddings
-import sys
 import os
 from datetime import datetime
 from modules.set_model import llm_model
+from langchain.callbacks import get_openai_callback
 
 def check_and_load_vector_db(file_path, embedding):
     """
@@ -50,8 +49,11 @@ def qa_analysis(llm, chain_type, retriever, verbose, query):
 
     start = datetime.now()
 
-    # Execute the QA analysis
-    response = qa.run(query)
+    # Measure number of tokens used
+    with get_openai_callback() as cb:
+        # Execute the QA analysis
+        response = qa.run(query)
+    print(cb.total_tokens)
 
     end = datetime.now()
 

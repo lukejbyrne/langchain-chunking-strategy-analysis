@@ -74,7 +74,6 @@ def qa_analysis(llm, chain_type, retriever, verbose, query):
 def main():
     # Basic Setup
     _ = load_dotenv(find_dotenv()) # read local .env file
-    llm_model = llm_model()
 
     # Load data into vector db or use existing one
     file_path = '../data/OutdoorClothingCatalog_1000.csv'
@@ -89,7 +88,7 @@ def main():
 
     # Configure LLM for querying
     # layers vector db on llm to inform decisions and responses
-    llm = ChatOpenAI(temperature = 0.0, model=llm_model)
+    llm = ChatOpenAI(temperature = 0.0, model=llm_model())
     retriever = db.as_retriever()
 
     # Run analysis
@@ -102,7 +101,7 @@ def main():
     #TODO: llm to create and evaluate
     # EVALUATION
 
-    tuple = generate_qas(file_path, db, llm)
+    tuple = generate_qas(file_path, db, llm, "stuff")
     qa = tuple[0]
     examples = tuple[1]
     evaluate(qa, examples, llm)

@@ -7,7 +7,30 @@ from langchain_community.document_loaders import CSVLoader
 from modules.set_model import llm_model
 from langchain_openai import ChatOpenAI
 
-def generate_qas(file_path, db, llm):
+def langchain_output_parser(qa_output):
+    """
+    Transforms the QA output from langchain into a dictionary format without the 'qa_pairs' field.
+    
+    Parameters:
+    - qa_output: A list of dictionaries, where each dictionary contains 'qa_pairs' among other possible fields.
+
+    Returns:
+    - A list of dictionaries, where each dictionary directly contains 'query' and 'answer' fields.
+    """
+    parsed_output = []
+    for item in qa_output:
+        # Assuming each item in qa_output is a dictionary with a 'qa_pairs' key
+        qa_pair = item.get('qa_pairs', {})
+        # Repackage the qa_pair without the 'qa_pairs' field
+        reformatted_item = {
+            'query': qa_pair.get('query', ''),
+            'answer': qa_pair.get('answer', '')
+        }
+        parsed_output.append(reformatted_item)
+    return parsed_output
+
+
+def generate_qas(file_path, db, llm, chain_type):
     # Load vector db to index
     loader = CSVLoader(file_path=file_path)
     data = loader.load()
@@ -15,7 +38,7 @@ def generate_qas(file_path, db, llm):
 
     qa = RetrievalQA.from_chain_type(
         llm=llm, 
-        chain_type="stuff", 
+        chain_type=chain_type, 
         retriever=index.vectorstore.as_retriever(), 
         verbose=True,
         chain_type_kwargs = {
@@ -23,24 +46,23 @@ def generate_qas(file_path, db, llm):
         }
     ) 
 
-    #TODO: LLM generated Q&As?
     # LLM-Generated example Q&A pairs 
     example_gen_chain = QAGenerateChain.from_llm(ChatOpenAI(model=llm_model()))
     # the warning below can be safely ignored
-    examples = example_gen_chain.apply_and_parse(
-        [{"doc": t} for t in data[:5]]
+    raw_examples = example_gen_chain.apply( # create raw examples
+        [{"doc": t} for t in data[:5]],
     )
-    print(examples[0])
-    print(data[0])
 
-    # run example
-    qa.run(examples[0]["query"]) #TODO: PRIORITY; key error?
+    # Parse the raw examples into required format
+    examples = langchain_output_parser(raw_examples)
+
+    # run for manual evaluation
+    qa.run(examples[0]["query"])
 
     return qa, examples
 
 def evaluate(qa, examples, llm):
     # LLM assisted evaluation
-    # How are we going to evaulate those created by LLM?
     predictions = qa.apply(examples)
     eval_chain = QAEvalChain.from_llm(llm)
     graded_outputs = eval_chain.evaluate(examples, predictions)
@@ -52,14 +74,5 @@ def evaluate(qa, examples, llm):
         print("Question: " + predictions[i]['query'])
         print("Real Answer: " + predictions[i]['answer'])
         print("Predicted Answer: " + predictions[i]['result'])
-        print("Predicted Grade: " + graded_outputs[i]['text'])
+        print("Predicted Grade: " + graded_outputs[i]['results'])
         print()
-
-    print(graded_outputs[0])
-
-    # store in file for manual evaluation
-    # Manual Evaluation
-    langchain.debug = True
-    qa.run(examples[0]["query"]) # example output at example_output.txt
-    # Turn off the debug mode
-    langchain.debug = False

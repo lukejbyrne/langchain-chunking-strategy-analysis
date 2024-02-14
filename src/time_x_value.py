@@ -76,9 +76,9 @@ def qa_analysis(llm, chain_type, retriever, verbose, query, results_data):
             # Update the existing dictionary
             item.update({'time': td, 'tokens': tokens_used})
             break
-        else:
-            # Append a new instance of ResultsData if no matching chain_type was found
-            results_data.append({'chain_type': chain_type, 'time': td, 'tokens': tokens_used})
+    else:
+        # Append a new instance of ResultsData if no matching chain_type was found
+        results_data.append({'chain_type': chain_type, 'time': td, 'tokens': tokens_used})
 
     print("\n\nTESTING\n:" + '\n'.join([str(item) for item in results_data]))
 

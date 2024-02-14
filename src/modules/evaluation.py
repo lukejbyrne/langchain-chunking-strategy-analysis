@@ -61,7 +61,7 @@ def generate_qas(file_path, db, llm, chain_type):
 
     return qa, examples
 
-def evaluate(qa, examples, llm):
+def evaluate(chain_type, qa, examples, llm, results_data):
     # LLM assisted evaluation
     predictions = qa.apply(examples)
     eval_chain = QAEvalChain.from_llm(llm)
@@ -70,9 +70,24 @@ def evaluate(qa, examples, llm):
     # turn to object and return
     # using llm as real answer and predicted answer are not similar in a string match sense, e.g. look at example_llm_eval.txt
     for i, eg in enumerate(examples):
-        print(f"Example {i}:")
-        print("Question: " + predictions[i]['query'])
-        print("Real Answer: " + predictions[i]['answer'])
-        print("Predicted Answer: " + predictions[i]['result'])
-        print("Predicted Grade: " + graded_outputs[i]['results'])
+        
+        example_number = i
+        query = predictions[i]['query']
+        answer = predictions[i]['answer']
+        predicted_answer = predictions[i]['result']
+        result = graded_outputs[i]['results']
+            
+        print(f"Example {example_number}:")
+        print("Question: " + query)
+        print("Real Answer: " + answer)
+        print("Predicted Answer: " + predicted_answer)
+        print("Predicted Grade: " + result)
         print()
+
+        for item in results_data:
+            if item['chain_type'] == chain_type:
+                # Update the existing dictionary
+                item.update({'example_number': example_number, 'query': query, "answer": answer, "predicted_answer": predicted_answer, "result": result})
+                break
+
+    return results_data

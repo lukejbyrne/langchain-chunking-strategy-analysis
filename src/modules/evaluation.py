@@ -6,6 +6,8 @@ from langchain_community.document_loaders import CSVLoader
 from modules.set_model import llm_model
 from langchain_openai import ChatOpenAI
 from modules.results_data import ResultsData
+from datetime import datetime
+from langchain.callbacks import get_openai_callback
 
 def langchain_output_parser(qa_output):
     """
@@ -63,7 +65,24 @@ def generate_qas(file_path, db, llm, chain_type):
 
 def evaluate(chain_type, qa, examples, llm, results_data):
     # LLM assisted evaluation
-    predictions = qa.apply(examples)
+
+    # Measure number of tokens used
+    #TODO: remove duplication
+    with get_openai_callback() as cb:
+        start = datetime.now()
+
+        try:
+            predictions = qa.apply(examples)
+        except ValueError as e: 
+            response = e
+
+        end = datetime.now()
+        
+    # Calculate the difference between the end and start timestamps to get the execution duration.
+    # The duration is converted to milliseconds for a more precise and readable format.
+    td = (end - start).total_seconds() * 10**3
+    tokens_used = cb.total_tokens
+
     eval_chain = QAEvalChain.from_llm(llm)
     graded_outputs = eval_chain.evaluate(examples, predictions)
 
@@ -84,24 +103,24 @@ def evaluate(chain_type, qa, examples, llm, results_data):
         print("Predicted Grade: " + result)
         print()
 
-        results_data = add_to_results_list(results_data, chain_type, query, example_number=i, predicted_answer=predicted_answer, answer=answer, result=result)
+    results_data = add_to_results_list(results_data, chain_type, query, time=td, tokens_used=tokens_used, example_number=i, predicted_answer=predicted_answer, answer=answer, result=result)
     return results_data
 
-def add_to_results_list(results_data, chain_type, query, td=None, tokens_used=None, number=None, response=None, answer=None, result=None):
+def add_to_results_list(results_data, chain_type, query, time=None, tokens_used=None, example_number=None, answer=None, predicted_answer=None, result=None):
     found = False
     for item in results_data:
         if item.chain_type == chain_type:
             # Update the existing dictionary
-            item.append_evaluation(time=td, tokens_used=tokens_used, example_number=number, 
-                         predicted_query=query, answer=response, predicted_answer=answer, result=result)
+            item.append_evaluation(time=time, tokens_used=tokens_used, example_number=example_number, 
+                         predicted_query=query, answer=answer, predicted_answer=predicted_answer, result=result)
             found = True
             break
 
     if not found:
         # Append a new instance of ResultsData if no matching chain_type was found
-        results_data.append(ResultsData(chain_type=chain_type, time=td, tokens_used=tokens_used, 
-                                        example_number=number, predicted_query=query, 
-                                        answer=response, predicted_answer=answer, 
+        results_data.append(ResultsData(chain_type=chain_type, time=time, tokens_used=tokens_used, 
+                                        example_number=example_number, predicted_query=query, 
+                                        answer=answer, predicted_answer=predicted_answer, 
                                         result=result))
         
     return results_data

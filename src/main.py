@@ -6,6 +6,7 @@ from modules.evaluation import generate_qas, evaluate
 from modules.markdown_file_gen import results_data_to_markdown_table, write_markdown_table_to_file
 from modules.vector_db import check_and_load_vector_db
 from modules.qa_analysis import qa_analysis
+from modules.data_viz import data_viz
 
 def main():
     # Basic Setup
@@ -49,6 +50,9 @@ def main():
 
     # Write results to file
     write_markdown_table_to_file(md_table, "results.md")
+
+    # Visualise results
+    data_viz(results_data)
 
 if __name__ == '__main__':
     main()

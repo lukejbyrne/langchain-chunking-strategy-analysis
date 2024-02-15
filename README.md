@@ -129,4 +129,6 @@ The analysis of the experiment is based on the provided data, which includes ave
 Understanding these limitations is crucial for interpreting the results and for guiding future experiments and applications of chunking strategies in language models.
 
 ## Further work
-Check token's used and chain type for generating QAs, ideally we want to measure the exact tokens in the prompt and response, as well as the exact time taken for openai to respond. As well as visualisation of results.
+- Check token's used and chain type for generating QAs, ideally we want to measure the exact tokens in the prompt and response, as well as the exact time taken for openai to respond.
+- Test for scaling up of prompt tokens
+- Test for increasing complexity of query

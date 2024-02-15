@@ -19,6 +19,12 @@
 ## TL;DR
 This report investigates four standard chunking strategies provided by LangChain for optimizing question answering with large language models (LLMs): `stuff`, `map_reduce`, `refine`, and `map_rerank`. By analyzing performance metrics such as processing time, token usage, and accuracy, we find that `stuff` leads in efficiency and accuracy, while `refine` consumes the most resources without perfect accuracy. The `map_rerank` strategy, although resource-intensive, ensures high accuracy, and `map_reduce` balances resource use and correctness. This study underscores the importance of selecting an appropriate chunking strategy based on the specific requirements of LLM applications, with a focus on operational efficiency and accuracy of results. However, limitations such as variability in LLM responses, potential inaccuracies in token estimation, and lack of human evaluation suggest areas for further research and refinement.
 
+Total OpenAI API cost for runs (incl. debugging and testing): $1.64
+- $0.55 - Embedding models
+- $1.09 - GPT-3.5 Turbo
+
+Could have saved approx. $0.70 if I used Jupyter notebook as it facilitates running of specific commands/functions, and if I implemented a local vector db earlier as it would only require 1 embedding run to save.
+
 ### Design
 ![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/process_viz.png)
 

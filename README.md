@@ -1,5 +1,21 @@
 # LangChain Chunking Strategy Investigation
 
+# Table of Contents
+
+1. [TL;DR](#tldr)
+2. [Introduction](#introduction)
+3. [Chunking Strategies](#chunking-strategies)
+    1. [Stuffing](#stuffing)
+    2. [Map_Reduce](#map_reduce)
+    3. [Refine](#refine)
+    4. [Map_Rerank](#map_rerank)
+4. [Design](#design)
+5. [Results](#results)
+6. [Discussion](#discussion)
+    1. [Measurement of Accuracy Using LLMS](#measurement-of-accuracy-using-llms)
+    2. [Limitations](#limitations)
+    3. [Further work?](#further-work)
+
 ## TL;DR
 This report investigates four standard chunking strategies provided by LangChain for optimizing question answering with large language models (LLMs): `stuff`, `map_reduce`, `refine`, and `map_rerank`. By analyzing performance metrics such as processing time, token usage, and accuracy, we find that `stuff` leads in efficiency and accuracy, while `refine` consumes the most resources without perfect accuracy. The `map_rerank` strategy, although resource-intensive, ensures high accuracy, and `map_reduce` balances resource use and correctness. This study underscores the importance of selecting an appropriate chunking strategy based on the specific requirements of LLM applications, with a focus on operational efficiency and accuracy of results. However, limitations such as variability in LLM responses, potential inaccuracies in token estimation, and lack of human evaluation suggest areas for further research and refinement.
 
@@ -12,7 +28,8 @@ This report investigates four standard chunking strategies provided by LangChain
 ## Introduction
 Due to the vast size of data utilised by LLMs, an important consideration is the ability to process this data efficiently. LangChain provides 4 chunking strategies for question answering as standard; `stuff`, `map_reduce`, `refine`, and `map_rerank`. During this analysis I will compare these various methods in time, tokens and accuracy. The accuracy will be tested by sample questions and evaluations also provided by an LLM.
 
-Let's first start with a brief explanation of the 4 methods in question with some pros and cons.
+## Chunking Strategies
+In the realm of language processing, LangChain adopts carefully curated chunking strategies to facilitate efficient language learning. These strategies disassemble intricate linguistic structures into manageable components, aligning with cognitive processes. This report delves into LangChain's four primary chunking strategies, underscoring their significance in augmenting language acquisition and cognition.
 
 ### Stuffing
 

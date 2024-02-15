@@ -96,7 +96,7 @@ The experiment evaluated four different chunking strategies: `map_reduce`, `map_
 
 ## Discussion
 
-## Measurement of Accuracy Using LLMS
+## Measurement of Accuracy Using LLMs
 
 The correctness ratio, which measures the accuracy of the chunking strategies, was evaluated using LangChain Language Model Services (LLMS). The `map_rerank` and `stuff` strategies yielded perfect correctness, indicating that they are highly reliable in producing accurate results. The `refine` strategy, despite its resource intensiveness, failed to achieve a perfect score, suggesting that its approach to chunking and refining may introduce errors or inefficiencies.
 

@@ -2,6 +2,7 @@ from datetime import datetime
 from langchain.chains import RetrievalQA
 from langchain.callbacks import get_openai_callback
 from modules.results_data import ResultsData
+from evaluation import add_to_results_list
 
 def qa_analysis(llm, chain_type, retriever, verbose, query, number, results_data):
     """
@@ -36,19 +37,7 @@ def qa_analysis(llm, chain_type, retriever, verbose, query, number, results_data
     
     print(f"Response: {response}\nThe time of execution of above program is : {td:.03f}ms")
 
-    found = False
-    for item in results_data:
-        if item.chain_type == chain_type:
-            # Update the existing dictionary
-            item.append_evaluation(time=td, tokens_used=tokens_used, example_number=number, 
-                         predicted_query=query, answer=response)
-            found = True
-            break
-
-    if not found:
-        # Append a new instance of ResultsData if no matching chain_type was found
-        results_data.append(ResultsData(chain_type=chain_type, time=td, tokens_used=tokens_used, 
-                                        example_number=number, predicted_query=query, answer=response))
+    results_data = add_to_results_list(results_data, chain_type, query, td, tokens_used, number, response)
 
     print("\n\nTESTING\n:" + '\n'.join([str(item) for item in results_data]))
 

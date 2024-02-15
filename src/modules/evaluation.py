@@ -1,11 +1,11 @@
-import langchain
 from langchain.evaluation.qa import QAGenerateChain
 from langchain.evaluation.qa import QAEvalChain
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import CSVLoader
-from modules.set_model import llm_model
+from set_model import llm_model
 from langchain_openai import ChatOpenAI
+from results_data import ResultsData
 
 def langchain_output_parser(qa_output):
     """
@@ -84,10 +84,24 @@ def evaluate(chain_type, qa, examples, llm, results_data):
         print("Predicted Grade: " + result)
         print()
 
-        for item in results_data:
-            if item['chain_type'] == chain_type:
-                # Update the existing dictionary
-                item.update({'example_number': example_number, 'query': query, "answer": answer, "predicted_answer": predicted_answer, "result": result})
-                break
+        results_data = add_to_results_list(results_data, chain_type, query, answer=answer, result=result)
+    return results_data
 
+def add_to_results_list(results_data, chain_type, query, td=None, tokens_used=None, number=None, response=None, predicted_answer=None, result=None):
+    found = False
+    for item in results_data:
+        if item.chain_type == chain_type:
+            # Update the existing dictionary
+            item.append_evaluation(time=td, tokens_used=tokens_used, example_number=number, 
+                         predicted_query=query, answer=response, predicted_answer=predicted_answer, result=result)
+            found = True
+            break
+
+    if not found:
+        # Append a new instance of ResultsData if no matching chain_type was found
+        results_data.append(ResultsData(chain_type=chain_type, time=td, tokens_used=tokens_used, 
+                                        example_number=number, predicted_query=query, 
+                                        answer=response, predicted_answer=predicted_answer, 
+                                        result=result))
+        
     return results_data

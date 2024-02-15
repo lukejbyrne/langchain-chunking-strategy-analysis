@@ -5,7 +5,7 @@ class ResultsData:
         if example_number is not None:
             self.append_evaluation(time, tokens_used, example_number, predicted_query, answer, predicted_answer, result)
     
-    def append_evaluation(self, time, tokens_used, example_number, predicted_query, answer, predicted_answer=None, result=None):
+    def append_evaluation(self, time, tokens_used, example_number, predicted_query, answer, predicted_answer, result):
         """Append a new evaluation result to the eval list."""
         self.eval.append({
             "time": time,

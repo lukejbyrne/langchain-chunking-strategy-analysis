@@ -1,46 +1,14 @@
 from dotenv import load_dotenv, find_dotenv
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
-from langchain_community.document_loaders import CSVLoader
-from langchain_community.vectorstores import Chroma
 from langchain_openai.embeddings import OpenAIEmbeddings
-import os
 from datetime import datetime
 from modules.set_model import llm_model
 from langchain.callbacks import get_openai_callback
 from modules.evaluation import generate_qas, evaluate
 from modules.results_data import ResultsData
 from modules.markdown_file_gen import results_data_to_markdown_table, write_markdown_table_to_file
-
-def vct_db_filename_gen(file_path):
-    # Derive vector DB filename from CSV filename
-    base_name = os.path.basename(file_path)
-    db_file_name = os.path.splitext(base_name)[0] + ".vecdb"
-
-    return os.path.join(os.path.dirname(file_path), db_file_name)
-
-def check_and_load_vector_db(file_path, embedding):
-    """
-    Checks if a vector db file exists for the given file_path, 
-    loads it if exists, otherwise creates it from the csv and saves it.
-    """
-    # Derive vector DB filename from CSV filename
-    db_file_path = vct_db_filename_gen(file_path)
-
-    # Check if the vector DB file exists
-    if os.path.exists(db_file_path):
-        print(f"Loading existing vector DB from {db_file_path}")
-        db = Chroma(persist_directory=db_file_path, embedding_function=embedding)
-    else:
-        print(f"Vector DB not found. Creating from {file_path}")
-        # Load the CSV and create the vector DB
-        loader = CSVLoader(file_path=file_path)
-        documents = loader.load()
-        # Save the newly created vector DB
-        db = Chroma.from_documents(documents, embedding, persist_directory=db_file_path)
-        print(f"Saved new vector DB to {db_file_path}")
-    
-    return db
+from modules.vector_db import vct_db_filename_gen, check_and_load_vector_db
 
 def qa_analysis(llm, chain_type, retriever, verbose, query, number, results_data):
     """

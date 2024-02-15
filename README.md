@@ -20,7 +20,7 @@
 This report investigates four standard chunking strategies provided by LangChain for optimizing question answering with large language models (LLMs): `stuff`, `map_reduce`, `refine`, and `map_rerank`. By analyzing performance metrics such as processing time, token usage, and accuracy, we find that `stuff` leads in efficiency and accuracy, while `refine` consumes the most resources without perfect accuracy. The `map_rerank` strategy, although resource-intensive, ensures high accuracy, and `map_reduce` balances resource use and correctness. This study underscores the importance of selecting an appropriate chunking strategy based on the specific requirements of LLM applications, with a focus on operational efficiency and accuracy of results. However, limitations such as variability in LLM responses, potential inaccuracies in token estimation, and lack of human evaluation suggest areas for further research and refinement.
 
 ### Design
-![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/process_viz.png)
+![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/process_viz.png)
 
 ### Results
 ![results_data_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/results/data_viz.png)
@@ -81,7 +81,7 @@ Map_Rerank excels in environments where the initial retrieval might produce a la
 ## Design
 Below the process flow can be seen:
 
-![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/process_viz.png)
+![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/process_viz.png)
 
 1. Load CSV into Chroma vector db using OpenAIEmbeddings from LangChain
 2. Generate queries and answers from LLM using LangChain RetrieveQA and ChatOpenAI

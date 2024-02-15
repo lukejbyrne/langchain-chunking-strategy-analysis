@@ -76,7 +76,7 @@ def evaluate(chain_type, qa, examples, llm, results_data):
         answer = predictions[i]['answer']
         predicted_answer = predictions[i]['result']
         result = graded_outputs[i]['results']
-            
+        
         print(f"Example {example_number}:")
         print("Question: " + query)
         print("Real Answer: " + answer)

@@ -64,4 +64,4 @@ ax.set_xticklabels(agg_data['chain_type'])
 plt.xticks(rotation=45)
 plt.tight_layout()
 
-plt.savefig("data_viz.png")
+plt.savefig("../results/data_viz.png")

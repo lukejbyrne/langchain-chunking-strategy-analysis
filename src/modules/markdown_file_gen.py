@@ -23,7 +23,7 @@ def results_data_to_markdown_table(results_data_list):
 
 def write_markdown_table_to_file(markdown_table, filename):
     # Write the markdown table to the specified file
-    with open(filename, 'w', encoding='utf-8') as file:
+    with open(f"../../results/{filename}", 'w', encoding='utf-8') as file:
         file.write(markdown_table)
     
     print(f"Markdown table successfully written to {filename}")

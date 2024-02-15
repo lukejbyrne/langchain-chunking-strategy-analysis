@@ -2,7 +2,7 @@
 
 Due to the vast size of data utilised by LLMs, an important consideration is the ability to process this data efficiently. LangChain provides 4 chunking strategies for question answering as standard; Stuffing, Map_Reduce, Refine, and Map_Rerank. During this analysis I will compare these various methods in time and accuracy as tokens scale linearly (due to limited funding). The accuracy will be tested by sample questions and evaluations also by an LLM.
 
-**NEXT STEPS:** Check token's used and chain type for generating QAs, ideally we want to measure the exact tokens in the prompt and response, as well as the exact time taken for openai to respond
+**NEXT STEPS:** Check token's used and chain type for generating QAs, ideally we want to measure the exact tokens in the prompt and response, as well as the exact time taken for openai to respond. As well as visualisation of results.
 
 ## Introduction
 Let's first start with a brief explanation of the 4 methods in question with some pros and cons.

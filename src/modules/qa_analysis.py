@@ -22,7 +22,7 @@ def qa_analysis(llm, chain_type, retriever, verbose, query, number, results_data
 
         try:
             # Execute the QA analysis
-            response = qa.invoke(query)
+            response = qa.invoke(query) #TODO: i've only added queries, no answers...
         except ValueError as e: 
             response = e
 

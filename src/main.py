@@ -27,14 +27,14 @@ def main():
     llm = ChatOpenAI(temperature = 0.0, model=llm_model())
     retriever = db.as_retriever()
 
-    # Manual analysis
-    for index, query in enumerate(queries, start=1):
-        results_data = qa_analysis(llm, "stuff", retriever, True, query, index, results_data)
-        results_data = qa_analysis(llm, "map_reduce", retriever, True, query, index, results_data)
-        results_data = qa_analysis(llm, "refine", retriever, True, query, index, results_data)
-        results_data = qa_analysis(llm, "map_rerank", retriever, True, query, index, results_data)
+    # Manual analysis - TODO: add answers
+    # for index, query in enumerate(queries, start=1):
+    #     results_data = qa_analysis(llm, "stuff", retriever, True, query, index, results_data)
+    #     results_data = qa_analysis(llm, "map_reduce", retriever, True, query, index, results_data)
+    #     results_data = qa_analysis(llm, "refine", retriever, True, query, index, results_data)
+    #     results_data = qa_analysis(llm, "map_rerank", retriever, True, query, index, results_data)
 
-    # EXPERIMENTAL LLM QA GEN AND EVALUATION
+    # LLM QA Gen AND Evaluate
     for strat in strategies:
         # Generate evaluation Q&As
         tuple = generate_qas(file_path, db, llm, strat) #TODO: change this?

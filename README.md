@@ -40,9 +40,13 @@ In the realm of language processing, LangChain adopts carefully curated chunking
 
 ### Stuffing
 
+![stuffing](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/stuffing.webp)
+
 `stuffing` involves directly adding the input content, such as documents or prompts, into the model's input prompt without any alterations. This approach may work for shorter inputs but becomes problematic when dealing with a significant number of tokens, as it can quickly reach the token limit. Despite its simplicity, it's not a scalable solution.
 
 ### Map_Reduce
+
+![map_reduce](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/map_reduce.webp)
 
 The `map_reduce` strategy aims to handle longer inputs by breaking them into smaller chunks (documents in this case), processing them in parallel, and then combining the outputs to create a final summary. This approach involves the following steps:
 
@@ -53,6 +57,8 @@ While `map_reduce` optimises performance and parallel processing, it might lead 
 
 ### Refine
 
+![refine](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/refine.webp)
+
 The `refine` strategy draws inspiration from the functional programming concept of "foldl." It involves iteratively summarising and refining the input by combining each successive summary with the next document, resulting in a gradually refined output. The process entails:
 
 - **Foldl Analog**: Instead of numerical multiplication, a binary function is used to combine documents and their summaries. The initial value is an empty document or an initial summary, and the function accumulates the content.
@@ -61,6 +67,8 @@ The `refine` strategy draws inspiration from the functional programming concept 
 The `refine` strategy is elegant and efficient, producing a refined summary through successive iterations. It showcases the capability of Lang Chain in managing complex operations.
 
 ### Map_Rerank
+
+![map_rerank](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/map-rerank.png)
 
 Map_Rerank is a sophisticated strategy designed to enhance the relevance and accuracy of responses by leveraging a two-step process: initial ranking followed by reranking based on more refined criteria. This approach is particularly useful in scenarios where the initial set of results or responses needs to be optimised for quality, relevance, or other specific metrics. The process involves:
 

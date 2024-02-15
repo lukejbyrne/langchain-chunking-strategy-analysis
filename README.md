@@ -68,7 +68,7 @@ The `refine` strategy is elegant and efficient, producing a refined summary thro
 
 ### Map_Rerank
 
-![map_rerank](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/map-rerank.png)
+![map_rerank](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/docs/map_rerank.png)
 
 Map_Rerank is a sophisticated strategy designed to enhance the relevance and accuracy of responses by leveraging a two-step process: initial ranking followed by reranking based on more refined criteria. This approach is particularly useful in scenarios where the initial set of results or responses needs to be optimised for quality, relevance, or other specific metrics. The process involves:
 

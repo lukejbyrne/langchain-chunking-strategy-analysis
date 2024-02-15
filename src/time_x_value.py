@@ -10,6 +10,7 @@ from modules.set_model import llm_model
 from langchain.callbacks import get_openai_callback
 from modules.evaluation import generate_qas, evaluate
 from modules.results_data import ResultsData
+from modules.markdown_file_gen import results_data_to_markdown_table, write_markdown_table_to_file
 
 def vct_db_filename_gen(file_path):
     # Derive vector DB filename from CSV filename
@@ -91,40 +92,6 @@ def qa_analysis(llm, chain_type, retriever, verbose, query, number, results_data
     print("\n\nTESTING\n:" + '\n'.join([str(item) for item in results_data]))
 
     return results_data
-
-
-def results_data_to_markdown_table(results_data_list):
-    # Define the header of the markdown table
-    headers = ["Chain Type", "Eval Time", "Tokens Used", "Example Number", "Predicted Query", "Predicted Answer", "Answer", "Result"]
-    # Create the markdown table header and separator rows
-    markdown_table = "| " + " | ".join(headers) + " |\n"
-    markdown_table += "| " + " | ".join(["---"] * len(headers)) + " |\n"
-    
-    # Iterate over each ResultsData instance
-    for data in results_data_list:
-        # And then iterate over each evaluation within the ResultsData instance
-        for eval in data.eval:
-            # Construct each row with the appropriate data
-            row = [
-                data.chain_type,  # Corrected from data.type to data.chain_type
-                str(eval.get("time", "")),  # Using .get() for safer access to dictionary keys
-                str(eval.get("tokens_used", "")),
-                str(eval.get("example_number", "")),
-                eval.get("query", ""),
-                eval.get("predicted_answer", ""),
-                eval.get("answer", ""),
-                eval.get("result", "")
-            ]
-            markdown_table += "| " + " | ".join(row) + " |\n"
-    
-    return markdown_table
-
-def write_markdown_table_to_file(markdown_table, filename):
-    # Write the markdown table to the specified file
-    with open(filename, 'w', encoding='utf-8') as file:
-        file.write(markdown_table)
-    
-    print(f"Markdown table successfully written to {filename}")
 
 
 def main():

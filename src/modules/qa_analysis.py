@@ -2,7 +2,7 @@ from datetime import datetime
 from langchain.chains import RetrievalQA
 from langchain.callbacks import get_openai_callback
 from modules.results_data import ResultsData
-from evaluation import add_to_results_list
+from modules.evaluation import add_to_results_list
 
 def qa_analysis(llm, chain_type, retriever, verbose, query, number, results_data):
     """

@@ -14,7 +14,7 @@ def main():
     strategies = ["stuff", "map_reduce", "refine", "map_rerank"]
 
     # Load data into vector db or use existing one
-    file_path = '../data/OutdoorClothingCatalog_1000.csv'
+    file_path = 'data/OutdoorClothingCatalog_1000.csv'
     embedding = OpenAIEmbeddings()  # Define embedding
 
     # Check if vector DB exists for the CSV, and load or create accordingly

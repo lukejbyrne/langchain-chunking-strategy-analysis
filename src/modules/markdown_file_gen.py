@@ -1,28 +1,25 @@
 def results_data_to_markdown_table(results_data_list):
-    # Define the header of the markdown table
     headers = ["Chain Type", "Eval Time", "Tokens Used", "Example Number", "Predicted Query", "Predicted Answer", "Answer", "Result"]
-    # Create the markdown table header and separator rows
     markdown_table = "| " + " | ".join(headers) + " |\n"
     markdown_table += "| " + " | ".join(["---"] * len(headers)) + " |\n"
-    
-    # Iterate over each ResultsData instance
+
     for data in results_data_list:
-        # And then iterate over each evaluation within the ResultsData instance
         for eval in data.eval:
-            # Construct each row with the appropriate data
+            # Ensure every value is a string, handling None and ensuring dict values are properly formatted or avoided
             row = [
-                data.chain_type,  # Corrected from data.type to data.chain_type
-                str(eval.get("time", "")),  # Using .get() for safer access to dictionary keys
+                data.chain_type,
+                str(eval.get("time", "")),
                 str(eval.get("tokens_used", "")),
                 str(eval.get("example_number", "")),
                 eval.get("query", ""),
-                eval.get("predicted_answer", ""),
+                eval.get("predicted_answer", "") if eval.get("predicted_answer") is not None else "",
                 eval.get("answer", ""),
-                eval.get("result", "")
+                eval.get("result", "") if eval.get("result") is not None else ""
             ]
-            markdown_table += "| " + " | ".join(row) + " |\n"
+            markdown_table += "| " + " | ".join([str(item) for item in row]) + " |\n"
     
     return markdown_table
+
 
 def write_markdown_table_to_file(markdown_table, filename):
     # Write the markdown table to the specified file

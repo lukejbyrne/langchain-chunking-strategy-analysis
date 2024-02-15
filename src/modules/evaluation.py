@@ -3,9 +3,9 @@ from langchain.evaluation.qa import QAEvalChain
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import CSVLoader
-from set_model import llm_model
+from modules.set_model import llm_model
 from langchain_openai import ChatOpenAI
-from results_data import ResultsData
+from modules.results_data import ResultsData
 
 def langchain_output_parser(qa_output):
     """
@@ -41,9 +41,9 @@ def generate_qas(file_path, db, llm, chain_type):
         chain_type=chain_type, 
         retriever=index.vectorstore.as_retriever(), 
         verbose=True,
-        chain_type_kwargs = {
-            "document_separator": "<<<<>>>>>"
-        }
+        # chain_type_kwargs = {
+        #     "document_separator": "<<<<>>>>>"
+        # }
     ) 
 
     # LLM-Generated example Q&A pairs 
@@ -87,13 +87,13 @@ def evaluate(chain_type, qa, examples, llm, results_data):
         results_data = add_to_results_list(results_data, chain_type, query, answer=answer, result=result)
     return results_data
 
-def add_to_results_list(results_data, chain_type, query, td=None, tokens_used=None, number=None, response=None, predicted_answer=None, result=None):
+def add_to_results_list(results_data, chain_type, query, td=None, tokens_used=None, number=None, response=None, answer=None, result=None):
     found = False
     for item in results_data:
         if item.chain_type == chain_type:
             # Update the existing dictionary
             item.append_evaluation(time=td, tokens_used=tokens_used, example_number=number, 
-                         predicted_query=query, answer=response, predicted_answer=predicted_answer, result=result)
+                         predicted_query=query, answer=response, predicted_answer=answer, result=result)
             found = True
             break
 
@@ -101,7 +101,7 @@ def add_to_results_list(results_data, chain_type, query, td=None, tokens_used=No
         # Append a new instance of ResultsData if no matching chain_type was found
         results_data.append(ResultsData(chain_type=chain_type, time=td, tokens_used=tokens_used, 
                                         example_number=number, predicted_query=query, 
-                                        answer=response, predicted_answer=predicted_answer, 
+                                        answer=response, predicted_answer=answer, 
                                         result=result))
         
     return results_data

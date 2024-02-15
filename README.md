@@ -3,6 +3,12 @@
 ## TL;DR
 This report investigates four standard chunking strategies provided by LangChain for optimizing question answering with large language models (LLMs): `stuff`, `map_reduce`, `refine`, and `map_rerank`. By analyzing performance metrics such as processing time, token usage, and accuracy, we find that `stuff` leads in efficiency and accuracy, while `refine` consumes the most resources without perfect accuracy. The `map_rerank` strategy, although resource-intensive, ensures high accuracy, and `map_reduce` balances resource use and correctness. This study underscores the importance of selecting an appropriate chunking strategy based on the specific requirements of LLM applications, with a focus on operational efficiency and accuracy of results. However, limitations such as variability in LLM responses, potential inaccuracies in token estimation, and lack of human evaluation suggest areas for further research and refinement.
 
+### Design
+![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/process_viz.png)
+
+### Results
+![results_data_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/results/data_viz.png)
+
 ## Introduction
 Due to the vast size of data utilised by LLMs, an important consideration is the ability to process this data efficiently. LangChain provides 4 chunking strategies for question answering as standard; `stuff`, `map_reduce`, `refine`, and `map_rerank`. During this analysis I will compare these various methods in time, tokens and accuracy. The accuracy will be tested by sample questions and evaluations also provided by an LLM.
 
@@ -41,6 +47,9 @@ Map_Rerank is a sophisticated strategy designed to enhance the relevance and acc
 Map_Rerank excels in environments where the initial retrieval might produce a large set of potential matches, but the quality or relevance of those matches varies significantly. By applying a two-tiered approach, it ensures that users or downstream processes receive the most pertinent information, enhancing both user experience and operational efficiency. This strategy is commonly used in search engines, recommendation systems, and content filtering applications, where precision and relevance are paramount.
 
 ## Design
+Below the process flow can be seen:
+
+![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/process_viz.png)
 
 1. Load CSV into Chroma vector db using OpenAIEmbeddings from LangChain
 2. Generate queries and answers from LLM using LangChain RetrieveQA and ChatOpenAI
@@ -51,10 +60,6 @@ Map_Rerank excels in environments where the initial retrieval might produce a la
 7. Create visualisation of the resulting numerical/binary data (time, tokens, accuracy)
 
 I also created a test query set for manual evaluation at [src/qa_analysis.py](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/src/qa_analysis.py), and a [jupyter notebook file](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/src/test.ipybn) to test each function independently using data set in the environment.
-
-Below the process flow can be seen:
-
-![process_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/process_viz.png)
 
 ## Results
 

@@ -84,7 +84,7 @@ def evaluate(chain_type, qa, examples, llm, results_data):
         print("Predicted Grade: " + result)
         print()
 
-        results_data = add_to_results_list(results_data, chain_type, query, answer=answer, result=result)
+        results_data = add_to_results_list(results_data, chain_type, query, example_number=i, predicted_answer=predicted_answer, answer=answer, result=result)
     return results_data
 
 def add_to_results_list(results_data, chain_type, query, td=None, tokens_used=None, number=None, response=None, answer=None, result=None):

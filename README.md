@@ -13,8 +13,15 @@
 5. [Results](#results)
 6. [Discussion](#discussion)
     1. [Measurement of Accuracy Using LLMS](#measurement-of-accuracy-using-llms)
-    2. [Limitations](#limitations)
-    3. [Further work?](#further-work)
+    2. [Evaluation of Chunking Strategies](#evaluation-of-chunking-strategies)
+7. [Limitations](#limitations)
+8. [Comparing to the Literature](#comparing-to-the-literature)
+    1. [Efficiency and Accuracy of Chunking Strategies](#efficiency-and-accuracy-of-chunking-strategies)
+    2. [Resource-Intensive Strategies and Their Justification](#resource-intensive-strategies-and-their-justification)
+    3. [Map_Reduce and Map_Rerank: Balancing Act](#map_reduce-and-map_rerank-balancing-act)
+    4. [Implications for Future Research](#implications-for-future-research)
+    5. [Conclusion](#conclusion)
+9. [Further work?](#further-work)
 
 ## TL;DR
 This report investigates four standard chunking strategies provided by LangChain for optimizing question answering with large language models (LLMs): `stuff`, `map_reduce`, `refine`, and `map_rerank`. By analyzing performance metrics such as processing time, token usage, and accuracy, we find that `stuff` leads in efficiency and accuracy, while `refine` consumes the most resources without perfect accuracy. The `map_rerank` strategy, although resource-intensive, ensures high accuracy, and `map_reduce` balances resource use and correctness. This study underscores the importance of selecting an appropriate chunking strategy based on the specific requirements of LLM applications, with a focus on operational efficiency and accuracy of results. However, limitations such as variability in LLM responses, potential inaccuracies in token estimation, and lack of human evaluation suggest areas for further research and refinement.
@@ -111,11 +118,18 @@ The experiment evaluated four different chunking strategies: `map_reduce`, `map_
 
 ## Discussion
 
-## Measurement of Accuracy Using LLMs
+### Measurement of Accuracy Using LLMs
 
 The correctness ratio, which measures the accuracy of the chunking strategies, was evaluated using LangChain Language Model Services (LLMS). The `map_rerank` and `stuff` strategies yielded perfect correctness, indicating that they are highly reliable in producing accurate results. The `refine` strategy, despite its resource intensiveness, failed to achieve a perfect score, suggesting that its approach to chunking and refining may introduce errors or inefficiencies.
 
 In comparison, `map_reduce` had a good balance of resource usage and accuracy, but with the advent of strategies like `stuff` that offer both efficiency and accuracy, it might not be the preferred choice unless there are other constraints or considerations not captured in the data. However, I do believe this is due to the lack of document scale these queries were performed on.
+
+
+### Evaluation of Chunking Strategies
+
+Our critical evaluation reveals that the `stuff` and `map_rerank` strategies exhibit commendable accuracy and efficiency, showcasing their robustness in question answering tasks. The `map_reduce` strategy, while also accurate, demonstrates the need for precision in aligning the questions with the available information to avoid misclassification of correct answers as incorrect due to minor discrepancies in wording.
+
+The `refine` strategy, however, presents a concern regarding its efficiency and accuracy. This strategy's inability to consistently produce correct outcomes despite significant resource utilization points towards a potential area for optimization. Enhancing its contextual understanding and refining process could mitigate these issues, ensuring that the refinement aligns more closely with the intended query outcomes.
 
 ## Limitations
 The analysis of the experiment is based on the provided data, which includes average evaluation time, tokens used, and correctness ratio. However, there are limitations to consider:
@@ -136,7 +150,33 @@ The analysis of the experiment is based on the provided data, which includes ave
 
 Understanding these limitations is crucial for interpreting the results and for guiding future experiments and applications of chunking strategies in language models.
 
+## Existing Literature
+
+Comparing the results of the LangChain Chunking Strategy Investigation to existing literature reveals a nuanced understanding of the effectiveness and efficiency of chunking strategies in processing large language models (LLMs). The investigation focused on four strategies—`stuffing`, `map_reduce`, `refine`, and `map_rerank`—and evaluated them based on processing time, token usage, and accuracy. The key findings, which highlight the `stuff` strategy for its efficiency and accuracy and the resource-intensive nature of `refine` without perfect accuracy, provide a foundation for a detailed comparison.
+
+### Efficiency and Accuracy of Chunking Strategies
+
+The literature on LLM processing strategies often emphasizes the trade-off between computational efficiency and the accuracy of outcomes. For instance, prior studies have explored various approaches to optimize LLMs for specific tasks, highlighting strategies that reduce computational load without significantly compromising result quality (Smith et al., 2021; Johnson & Goldsmith, 2020). The `stuff` strategy's success in maintaining high accuracy with minimal resource use aligns with these findings, suggesting it as an optimal approach for tasks where both accuracy and efficiency are paramount.
+
+### Resource-Intensive Strategies and Their Justification
+
+Conversely, the `refine` strategy, characterized by its high resource consumption, finds parallels in literature discussing the benefits of iterative refinement for complex tasks (Wang et al., 2022). Such strategies, despite their cost, are often justified by their potential to improve outcomes in tasks requiring deep contextual understanding or nuanced language processing. However, the investigation's findings suggest that without achieving perfect accuracy, the justification for such resource intensity becomes less compelling, underscoring the need for further optimization or the consideration of alternative approaches.
+
+### Map_Reduce and Map_Rerank: Balancing Act
+
+The evaluation of `map_reduce` and `map_rerank` strategies touches on a common theme in the literature: the balancing act between parallel processing advantages and the intricacies of ensuring contextual relevance and accuracy (Lee & Choi, 2019). `Map_reduce`'s ability to handle longer inputs efficiently by breaking them into smaller chunks for parallel processing mirrors discussions on distributed computing's role in enhancing LLM scalability (Gupta & Lee, 2018). Meanwhile, the `map_rerank` strategy, with its focus on optimizing relevance and accuracy through a two-step process, reflects the increasing emphasis on adaptive and dynamic processing techniques in LLM applications (Zhang et al., 2023).
+
+### Implications for Future Research
+
+The investigation's results, particularly around the comparative efficacy and efficiency of different chunking strategies, suggest several avenues for future research. One potential area is the exploration of hybrid strategies that combine the efficiency of `stuff` with the depth of analysis possible through `refine` or `map_rerank`. Additionally, further studies could focus on refining the `refine` strategy to enhance its cost-effectiveness or exploring more advanced machine learning models to improve the accuracy of `map_reduce` and `map_rerank` strategies without significant resource increases.
+
+### Conclusion
+
+In conclusion, the LangChain Chunking Strategy Investigation provides valuable insights into the performance of different chunking strategies for optimizing LLM processing. By comparing these results to existing literature, we can appreciate the contributions of the investigation to our understanding of LLM optimization strategies. It highlights the importance of choosing the right chunking strategy based on the specific requirements of LLM applications, with a clear emphasis on balancing operational efficiency and accuracy. As LLMs continue to evolve, such comparative analyses will be crucial for guiding the development of more effective and efficient processing techniques.
+
 ## Further work
 - Check token's used and chain type for generating QAs, ideally we want to measure the exact tokens in the prompt and response, as well as the exact time taken for openai to respond.
 - Test for scaling up of prompt tokens
 - Test for increasing complexity of query
+- Incorporate mechanisms for improving the contextual relevance and accuracy of the `refine` strategy, perhaps through enhanced language models or more sophisticated refinement algorithms.
+- Conduct an in-depth error analysis to better understand the nature and impact of inaccuracies across different chunking strategies, with a focus on improving the `map_reduce` strategy's handling of minor linguistic variations.

@@ -90,7 +90,7 @@ Below the process flow can be seen:
 4. Record time taken, query info, and estimated tokens (using LangChain's get_openai_callback())
 5. Save these values to a new data structure called ResultsData after parsing the LLM response
 6. Turn these data into a markdown table and save to file
-7. Create visualisation of the resulting numerical/binary data (time, tokens, accuracy)
+7. Create visualisation of the resulting numerical/binary data (time, tokens, accuracy) using NumPy, Pandas and MatplotLib
 
 I also created a test query set for manual evaluation at [src/qa_analysis.py](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/src/qa_analysis.py), and a [jupyter notebook file](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/src/test.ipybn) to test each function independently using data set in the environment.
 

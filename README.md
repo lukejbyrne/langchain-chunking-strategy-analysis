@@ -32,7 +32,7 @@ This report investigates four standard chunking strategies provided by LangChain
 
 ### Results
 ![results_data_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/results/data_viz.png)
-(Left hand bars indicate tokens used, right hand indicate tokens used).
+(Left hand bars indicate tokens used, right hand indicate time).
 ## Introduction
 Due to the vast size of data utilised by LLMs, an important consideration is the ability to process this data efficiently. LangChain provides 4 chunking strategies for question answering as standard; `stuff`, `map_reduce`, `refine`, and `map_rerank`. During this analysis I will compare these various methods in time, tokens and accuracy. The accuracy will be tested by sample questions and evaluations also provided by an LLM.
 
@@ -106,7 +106,7 @@ Could have saved approx. $0.70 if I used Jupyter notebook as it facilitates runn
 Can be found in the [src/results.md](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/results/results.md) file. A visualisation of average results is provided below:
 
 ![results_data_viz](https://github.com/lukejbyrne/LangChain_Chunking_Strategy_Analysis/blob/main/results/data_viz.png)
-(Left hand bars indicate tokens used, right hand indicate tokens used).
+(Left hand bars indicate tokens used, right hand indicate time).
 
 The experiment evaluated four different chunking strategies: `map_reduce`, `map_rerank`, `refine`, and `stuff`. The results were measured in terms of evaluation time, tokens used, and the correctness of the output.
 
